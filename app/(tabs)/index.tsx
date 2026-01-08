@@ -1,98 +1,137 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import Colors from "@/assets/colors";
+// import { useCityStore } from "@/src/store/useCityStore";
+import { useCityStore } from "@/src/store/useCityStore";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Athens from "../../src/components/cities/Athens";
+import Patras from "../../src/components/cities/Patras";
+import Thessaloniki from "../../src/components/cities/Thessaloniki";
+import { CityComponentProps } from "../../src/components/cities/types";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+
+// import Larissa from "../../src/components/cities/Larissa";
+// import Heraklion from "../../src/components/cities/Heraklion";
+
+
+const CITIES = ["Athens", "Thessaloniki", "Patras",
+    // "Heraklion", "Larissa"
+];
+
+export default function ChooseCity() {
+    const { t } = useTranslation();
+    // const [selectedCity, setSelectedCity] = useState<string | null>(null);
+    const selectedCity = useCityStore((s) => s.selectedCity);
+    const setCity = useCityStore((s) => s.setCity);
+
+    // const setCity = useCityStore((s) => s.setCity);
+
+    useFocusEffect(
+        useCallback(() => {
+            setCity(null)
+        },
+
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            []
+        )
+    );
+
+
+    const cityComponents: Record<string, React.FC<CityComponentProps>> = {
+        Athens,
+        Thessaloniki,
+        Patras,
+    };
+
+
+    const handleContinue = async (city: string) => {
+        setCity(city);
+    };
+
+    const CityComponent = selectedCity ? cityComponents[selectedCity] : null;
+
+    return !CityComponent ?
+        <ScrollView contentContainerStyle={styles.container}>
+
+            <Text style={styles.title}>{t("chooseCity") || "Choose Your City"}</Text>
+            <View style={styles.cityList}>
+                {CITIES.map((city) => (
+                    <TouchableOpacity
+                        key={city}
+                        style={[
+                            styles.cityButton,
+                            selectedCity === city ? styles.cityButtonSelected : null,
+                        ]}
+                        onPress={() => handleContinue(city)}
+                    >
+                        <Text
+                            style={[
+                                styles.cityText,
+                                selectedCity === city ? styles.cityTextSelected : null,
+                            ]}
+                        >
+                            {city}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        </ScrollView>
+        :
+        <CityComponent
+            setSelectedCity={setCity}
+            selectedCity={selectedCity}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+    container: {
+        flexGrow: 1,
+        padding: 24,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: Colors.primary,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: "bold",
+        marginBottom: 24,
+        textAlign: "center",
+        color: Colors.primaryLightest,
+
+    },
+    cityList: {
+        width: "100%",
+        marginBottom: 32,
+    },
+    cityButton: {
+        paddingVertical: 16,
+        marginVertical: 8,
+        borderRadius: 12,
+        backgroundColor: Colors.primaryLightest,
+        alignItems: "center",
+    },
+    cityButtonSelected: {
+        backgroundColor: Colors.primaryLight,
+    },
+    cityText: {
+        fontSize: 18,
+        color: "#333",
+    },
+    cityTextSelected: {
+        color: "#fff",
+        fontWeight: "bold",
+    },
+    continueButton: {
+        backgroundColor: "#007AFF",
+        paddingVertical: 14,
+        paddingHorizontal: 32,
+        borderRadius: 12,
+    },
+    continueText: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold",
+    },
 });

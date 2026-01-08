@@ -1,0 +1,31 @@
+{
+    "shared": {
+        "chooseCity": "Choose City",
+        "athens": "Athens",
+        "patra": "Patras",
+        "thes": "Thessaloniki",
+        "discover": "Discover the best activities in your city",
+        "begin": "Begin",
+        "filters": "Filters",
+        "personal": "Personal",
+        "city": "City",
+        "changeCity": "Change city",
+        "activities": "Activities",
+        "ActivitiesBasedOnCity": "All Activities based on the city of your choise",
+        "favorites": "Favorites",
+        "savedFavorites": "All your saved activities appear here",
+        "exit": "Logout from your account",
+        "events": "Events",
+        "MyEvents": "My Events",
+        "addedEvents": "All events that you've added",
+        "createEvent": "Create an event",
+        "createDescription": "Create your new event",
+        "editEvent": "Edit your event",
+        "editDescription": "Edit or Delete your events",
+        "about": "About",
+        "terms": "Terms & Conditions",
+        "privacy": "Privacy Policy",
+        "logIn": "Log in",
+        "provider": "Are you an event provider?"
+    }
+}
